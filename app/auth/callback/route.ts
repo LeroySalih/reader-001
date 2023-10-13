@@ -5,21 +5,21 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
 
-    console.log("Route called");
+    console.info("Route called");
     
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
 
     if (code) {
         const supabase = createRouteHandlerClient({cookies});
-        console.log(code);
+        console.info(code);
         await supabase.auth.exchangeCodeForSession(code);
     }
 
-    console.log("Origin:", requestUrl)
+    console.info("Origin:", requestUrl)
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    console.log("BaseUrl", baseUrl)
-    Object.keys(process.env).forEach((k) => k.includes('NEXT_PUBLIC') && console.log(k));
+    console.info("BaseUrl", baseUrl)
+    // Object.keys(process.env).forEach((k) => k.includes('NEXT_PUBLIC') && console.log(k));
     // console.log(process.env);
     return NextResponse.redirect(`${baseUrl}${requestUrl.search}`);
 }
