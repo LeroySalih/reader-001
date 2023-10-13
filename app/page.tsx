@@ -70,6 +70,7 @@ export default async function Home() {
   }
   const token = session!.data!.session!.provider_token;
 
+  return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
   const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
   const myClasses = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
   const myAssignments = await callFullApi("https://graph.microsoft.com/v1.0/education/me/assignments", token!);
