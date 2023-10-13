@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     console.info("BaseUrl", baseUrl)
     // Object.keys(process.env).forEach((k) => k.includes('NEXT_PUBLIC') && console.log(k));
     // console.log(process.env);
-    const redirectUrl = `https://${baseUrl}${requestUrl.search}`
+    const redirectUrl = `${baseUrl}${requestUrl.search}`
     console.info("redirectUrl", redirectUrl);
     return NextResponse.redirect(redirectUrl);
 }
