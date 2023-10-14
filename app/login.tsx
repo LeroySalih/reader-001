@@ -13,12 +13,14 @@ export default function SignInButton() {
 
     async function signInWithAzure() {
         
-
+        const redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`;
+        console.log("redirectUrl", redirectUrl);
+        
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'azure',
           options: {
             scopes: 'email',
-            redirectTo: `${location.origin}/auth/callback`
+            redirectTo: redirectUrl
           },
         })
       }

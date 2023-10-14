@@ -97,15 +97,22 @@ export default async function Home() {
       return <div className={`${styles.emptyCell}`}></div> 
     }
 
-    const classObj = myClasses.filter((f:any) => f && f.displayName.includes(displayName))[0];
-    const assignmentsForClass = myAssignments.filter((a:any) => classObj && a.classId == classObj.id);
+    const classObj = myClasses.filter((f:any) => f && f.displayName == displayName)[0];
+    const assignmentsForClass = myAssignments
+            .filter((a:any) => classObj && a.classId == classObj.id)
+            .sort((a:any, b:any) => a.dueDateTime > b.dueDateTime ? -1 : 1);
 
     if (classObj == null) 
       return <div>{displayName} not found</div>
-    const weeks = checkWeek(parseISO(assignmentsForClass?.sort((a:any, b:any) => a.dueDateTime > b.dueDateTime ? 1 : -1)[0]?.dueDateTime));
+    const weeks = checkWeek(parseISO(assignmentsForClass[0]?.dueDateTime));
 
     return <div>
-            <div className={`${styles.cell} ${checkWeekStyle(weeks)}`}>{classObj?.displayName}</div>
+            <div className={`${styles.cell} ${checkWeekStyle(weeks)}`}>
+              <div>{classObj?.displayName}</div>
+              
+              <div>{assignmentsForClass[0]?.dueDateTime.substring(0, 10)}</div>
+
+            </div>
           </div>
   }
 
@@ -182,7 +189,7 @@ export default async function Home() {
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
 
-        <div>{displayClass('7D/It1')}</div>
+        <div>{displayClass('23-7D/It1')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
@@ -190,7 +197,7 @@ export default async function Home() {
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
 
-        <div>{displayClass('7A/Dt1')}</div>
+        <div>{displayClass('23-7A/Dt1')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('23-9A/Dt')}</div>
         <div>{displayClass('')}</div>
@@ -214,7 +221,7 @@ export default async function Home() {
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
 
-        <div>{displayClass('7D/Dt1')}</div>
+        <div>{displayClass('23-7D/Dt1')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
@@ -241,8 +248,8 @@ export default async function Home() {
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
-        <div>{displayClass('22-10EC')}</div>
-        <div>{displayClass('11EC')}</div>
+        <div>{displayClass('23-10EC')}</div>
+        <div>{displayClass('23-11EC1')}</div>
         <div>{displayClass('')}</div>
         <div>{displayClass('')}</div>
         
@@ -265,32 +272,7 @@ export default async function Home() {
 
       </div>
 
-      <h1>Classes</h1>
-      
-      <h1>Me</h1>
-      <pre>
-        {JSON.stringify(me, null, 2)}
-      </pre>
-      <h1>My Assignments</h1>
-      <pre>
-        {//JSON.stringify(myAssignments, null, 2)
-        }
-      </pre>
-      <h1>My Classes</h1>
-      <pre>
-        {JSON.stringify(myClasses.filter((c:any) => c && c.displayName.includes('23-')), null, 2)}
-      </pre>
-      <h1>Token</h1>
-      <pre>
-        {JSON.stringify(token, null, 2)}
-      </pre>
-      <pre>
-        {JSON.stringify(user, null, 2)}
-      </pre>
-      <h1>Session</h1>
-      <pre>
-        {JSON.stringify(session, null, 2)}
-      </pre>
+     
     </>
   )
 }
