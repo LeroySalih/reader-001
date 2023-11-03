@@ -1,0 +1,29 @@
+.displayGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+}
+
+.pill {
+    font-size: 0.7rem;
+    border: silver solid 1px;
+    border-radius: 2rem;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    width: max-content;
+}
+
+.draft {
+    background-color: aliceblue;
+}
+
+.assigned {
+    background-color: darkseagreen;
+}
+
+.row {
+    padding: 0.5rem;
+    border-top : solid 1px silver;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+}
