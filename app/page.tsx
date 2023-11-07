@@ -272,7 +272,12 @@ export default async function Home() {
 
       </div>
 
-     
+      <h1>Me</h1>
+      <pre>{JSON.stringify( me, null, 2)}</pre>
+      <h1>Classes</h1>
+      <pre>{JSON.stringify( myClasses, null, 2)}</pre>
+      <h1>Assignments</h1>
+     <pre>{JSON.stringify( myAssignments, null, 2)}</pre>
     </>
   )
 }

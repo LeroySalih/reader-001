@@ -36,7 +36,7 @@ export default function SignInButton() {
 
     const handleSignOut = () => {
         console.log("Signing Out");
-        signOut;
+        signOut();
     }
 
     return <>
