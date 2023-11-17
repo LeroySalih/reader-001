@@ -1,0 +1,51 @@
+.displayGrid {
+    display: grid;
+}
+
+.tableHeader {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin: auto;
+}
+
+.cell {
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    border-top: dashed 1px silver;
+}
+
+.red0 {
+    background-color: #ff1493ff;
+    color: white;
+}
+
+.red1 {
+    background-color: #ff149380;
+    color: white;
+}
+
+.red2 {
+    background-color: #ff149320;
+    color: black;
+}
+
+.green0 {
+    background-color: #90ee90ff;
+}
+
+.green1 {
+    background-color: #90ee9080;
+}
+
+.green2 {
+    background-color: #90ee9020;
+}
+
+.current {
+    border-top: solid 4px black;
+    border-bottom: solid 4px black;
+}
+
+

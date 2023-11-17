@@ -4,3 +4,9 @@
     width: 80%;
     margin: auto;
 }
+
+.navBar {
+    display: flex;
+    justify-content: space-between;
+}
+
