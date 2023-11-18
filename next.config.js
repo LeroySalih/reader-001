@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = nextConfig
+module.exports = {
+    experimental: {
+        serverActions: {
+            allowedOrigins: ["localhost:3000", "silver-xylophone-975xqrwvp42qww-3000.app.github.dev"],
+        },
+    },
+}

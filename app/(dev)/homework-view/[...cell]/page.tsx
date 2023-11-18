@@ -3,7 +3,7 @@ import axios from 'axios';
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-import { format, formatDistance, formatRelative, subDays, startOfWeek, addWeeks, subWeeks, differenceInWeeks, differenceInDays } from 'date-fns'
+import { format, formatDistance, formatRelative, subDays, startOfWeek, endOfWeek, addWeeks, subWeeks, differenceInWeeks, differenceInDays } from 'date-fns'
 import parseISO from 'date-fns/parseISO'
 import styles from './page.module.css';
 import Link from "next/link";
@@ -59,7 +59,7 @@ const filterClasses = [
 
 export default async function Page({params}: {params: {cell: string[]}})  {
     
-    const {cell: [classId, week]} = params;
+    const {cell: [classDisplayName, week]} = params;
 
     const startOfThisWeek = startOfWeek(new Date())  
     const threeWeeksPast = subWeeks(startOfThisWeek, 3)
@@ -73,82 +73,71 @@ export default async function Page({params}: {params: {cell: string[]}})  {
     const cookieStore = cookies();
     const supabase = createServerComponentClient({ cookies: () => cookieStore })
 
-    const { data } = await supabase.from("test").select();
-    const user = await supabase.auth.getUser()
-    const session = await supabase.auth.getSession();
+      const getClassesFromDB = async (classDisplayName: string) => {
 
-    const token = session!.data!.session!.provider_token;
+        console.log("building Classes FromDB")
+        const {data: classesArr, error} = await supabase
+              .from("msTeamsClasses")
+              .select("id, displayName")
+              .eq("displayName", classDisplayName);
+        
+        if (error) {
+          console.error(error);
+          return null;
+        } 
 
-    const buildClasses = (classes: any, weeks: any, filterClasses: any) => {
-        // console.log(classes)
-        return classes
-                  .filter((c:any) => filterClasses.includes(c.displayName))
-                  .reduce((p: any, c: any) => { p[c.id] = {displayName: c.displayName, weeks: {}}; return p}, {})
-      }
-  
-      const buildAssignments = (classes : any, assignments: any) => {
-  
-        const assignmentsArray = []
-  
-        // classId, displayName, dueDateTime
-        for (const assignment of assignments.filter((f:any) => f.status !== 'draft' || f.status !== 'scheduled')){
-          // look up the class id of assignment.
-          const cId = assignment.classId;
-          const dueDateTimeWeek = format(startOfWeek(parseISO(assignment.dueDateTime)), "yyyy-MM-dd");
-          
-          //console.log(cId, dueDateTimeWeek, classes[cId]?.weeks[dueDateTimeWeek]);
-          
-          if (classes[cId] && !classes[cId].weeks[dueDateTimeWeek]){
-            // classes[cId].weeks[dueDateTimeWeek] = 0;
-            classes[cId].weeks[dueDateTimeWeek] = [];
-          }
-  
-          if (!classes[cId]) {
-            console.error(`Class not found:`, cId, assignment.displayName)
-          } else {
-            if (assignment.status === 'assigned'){
-              assignmentsArray.push({classId: classes[cId].id, classDisplayname: classes[cId].displayName, title: assignment.displayName, dueDate: dueDateTimeWeek })
-              // classes[cId].weeks[dueDateTimeWeek] = [...classes[cId].weeks[dueDateTimeWeek], assignment.displayName] // classes[cId].weeks[dueDateTimeWeek] + 1
-            }
-            
-          }
-          
-  
-        }
-        return assignmentsArray; //classes//.reduce((p: any, c: any) => {return p[c.displayName] = c}, {});
+        console.log("classesArr", classesArr);
+
+        // const classesObj = classesArr!.reduce((p: any, c: any) => { p[c.id] = {displayName: c.displayName, weeks: {}}; return p}, {})
+        
+        return classesArr[0];
       }
 
-    // return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
-    //const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
-    const myClassesArr = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
-    const myClassesObj = buildClasses(myClassesArr, weeks, filterClasses)
+      const getAssignmentsFromDB = async (classId:string, w:string) => {
+        
+        console.log("building Assignments FromDB")
+        const weekStart = format(startOfWeek(parseISO(w)), "yyyy-MM-dd");
+        const weekEnd = format(endOfWeek(parseISO(w)), "yyyy-MM-dd");
+        console.log(classId, weekStart, weekEnd)
+        const {data: assignmentsArr, error} = await supabase.from("msTeamsAssignments")
+                .select("id, classId, displayName, status, dueDateTime")
+                .eq("classId", classId)
+                // .eq("status", "assigned")
+                .gte("dueDateTime", weekStart)
+                .lte("dueDateTime", weekEnd)
+                ;
+        
+        if (error) {
+          console.error(error);
+          return null;
+        } 
 
-    const myAssignmentData = await callFullApi("https://graph.microsoft.com/v1.0/education/me/assignments", token!);
-    const myAssignmentArr = buildAssignments(myClassesObj, myAssignmentData)
+        console.log("classesArr", assignmentsArr);
 
+        // const classesObj = classesArr!.reduce((p: any, c: any) => { p[c.id] = {displayName: c.displayName, weeks: {}}; return p}, {})
+        
+        return assignmentsArr;
+
+      }
   
-    const getAssignmentsForClassWeek = (myAssignmentArr:any, classDisplayName:any, week:any) => {
-
-      const result = myAssignmentArr.filter((a:any) => a.dueDate == week && a.classDisplayname == classDisplayName)
-
-      return result;
-    }
-
-    const assignments = getAssignmentsForClassWeek(myAssignmentArr, classId, week);
+    // const assignments = getAssignmentsForClassWeek(myAssignmentArr, classId, week);
+    const classObj = await getClassesFromDB(classDisplayName);
+    const assignmentArr = await getAssignmentsFromDB(classObj!.id, week)
 
     return <>
     <hr/>
-    <h2>{classId} for week {week}</h2>
+    <h2>{classDisplayName} for week {week}</h2>
     {
-        getAssignmentsForClassWeek(myAssignmentArr, classId, week).map((a: any, i: any) => <div key={i}>
+        assignmentArr && assignmentArr!.map((a: any, i: any) => <div key={i}>
 
-            <h4>{a.title}</h4>
+            <h4>{a.displayName}</h4>
             <div className={styles.subTitle}>
-                <div>Due Date: {a.dueDate}</div>
-                <div>{a.classDisplayname}</div>
+                <div>Due Date: {a.dueDateTime}</div>
+                <div>Status: {a.status}</div>    
             </div>
             </div>)
+      
     }
-    
+
     </>
 }

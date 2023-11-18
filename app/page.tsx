@@ -65,219 +65,108 @@ export default async function Home() {
   const { data } = await supabase.from("test").select();
   const user = await supabase.auth.getUser()
   const session = await supabase.auth.getSession();
-  if(!session!.data!.session) {
-    return <SignInButton />
-  }
-  const token = session!.data!.session!.provider_token;
+  
+  const token = session?.data?.session?.provider_token;
 
   // return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
-  const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
-  const myClasses = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
-  const myAssignments = await callFullApi("https://graph.microsoft.com/v1.0/education/me/assignments", token!);
+  // const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
+  // const myClasses = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
+  // const myAssignments = await callFullApi("https://graph.microsoft.com/v1.0/education/me/assignments", token!);
 
-  /*
-  const displayClass = (classId: string) => {
-    {myClasses
-      .filter((c) => c.id == classId)
-      .map((c) => { return <div key={c.id}>
-      <h2>{c.displayName}({c.mailNickname})</h2>
-      <div className={styles.displayAssignmentTable}>
-      {myAssignments
-        .filter((f) => f.classId == c.id)
-        .sort((a, b) => a.dueDateTime < b.dueDateTime ? 1: -1)
-        .map((a) => [<div>{a.displayName}</div>,<div>{a.dueDateTime}</div>])}
-      </div>
-    </div>})}
-  }
-  */
+  async function refreshClasses () {
 
-  const displayClass = (displayName: string) => {
+    'use server'
+    console.log('refreshClasses called')
+    const cookieStore = cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+
+    const { data } = await supabase.from("test").select();
+    const user = await supabase.auth.getUser()
+    const session = await supabase.auth.getSession();
     
-    if (displayName == ''){
-      return <div className={`${styles.emptyCell}`}></div> 
+    const token = session?.data?.session?.provider_token;
+
+    // return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
+    const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
+    const myClasses = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
+    
+    const upsertData = myClasses.map((c:any) => ({id: c.id, displayName: c.displayName}));
+    console.log("UpsertData", upsertData);
+    
+    for (const d of upsertData){
+      const {error} = await supabase.from("msTeamsClasses").upsert(d)
+      error && console.error(error)
     }
-
-    const classObj = myClasses.filter((f:any) => f && f.displayName == displayName)[0];
-    const assignmentsForClass = myAssignments
-            .filter((a:any) => classObj && a.classId == classObj.id)
-            .sort((a:any, b:any) => a.dueDateTime > b.dueDateTime ? -1 : 1);
-
-    if (classObj == null) 
-      return <div>{displayName} not found</div>
-    const weeks = checkWeek(parseISO(assignmentsForClass[0]?.dueDateTime));
-
-    return <div>
-            <div className={`${styles.cell} ${checkWeekStyle(weeks)}`}>
-              <div>{classObj?.displayName}</div>
-              
-              <div>{assignmentsForClass[0]?.dueDateTime.substring(0, 10)}</div>
-
-            </div>
-          </div>
+    
+    
   }
 
-  const currentWeek = () => {
-    return getWeek(new Date(), {weekStartsOn: 0});
-  }
+  async function refreshAssignments () {
+    'use server'
+    console.log('refreshAssignments called')
+    const cookieStore = cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
 
-  const checkWeek = (dueDateTime: number | Date) => {  
-    return getWeek(dueDateTime, {weekStartsOn: 0}) == Number.NaN ? -5 : getWeek(dueDateTime, {weekStartsOn: 0}) - currentWeek()
-  }
+    // const { data } = await supabase.from("test").select();
+    const user = await supabase.auth.getUser()
+    const session = await supabase.auth.getSession();
+    
+    const token = session?.data?.session?.provider_token;
 
-  const checkWeekStyle = (weeks: number) => {
-    if (weeks > 1) return styles.ltNOne;
-    if (weeks == 1) return styles.nOne;
-    if (weeks == 0) return styles.zero;
-    if (weeks == -1) return styles.pOne;
-    return styles.gtPOne;
+    const {data, error} = await supabase.from("msTeamsClasses")
+                        .select("id, displayName")
+                        .in("displayName", ['23-11CS', '23-10CS', 
+                        '23-13BS', '23-12BS', '23-11BS1', '23-11BS2', '23-11BS1', '23-10BS1', '23-10BS2',
+                        '23-11EC1', '23-11EC', '23-10EC', '23-10EC1',
+                        '23-11IT', '23-10IT'])
 
+    
+    data?.map(async (d) => {
 
-  }
+      const url = `https://graph.microsoft.com/v1.0/education/classes/${d.id}/assignments`
+      
+      console.log(url);
 
+      const myAssignments = await callFullApi(url, token!);
+
+      console.log(myAssignments);
+
+      const upsertData = myAssignments.map((a:any) => ({
+        id: a.id,
+        classId: a.classId,
+        displayName: a.displayName,
+        dueDateTime: a.dueDateTime,   
+        instructions: a.instructions?.content,
+        status: a.status,
+        webUrl: a.webUrl 
+      }))
   
+      for (const ud of upsertData){
+        if (ud.instructions != null) {
+          console.log(ud.instructions)
+        }
+        const {error} = await supabase.from("msTeamsAssignments").upsert(ud)
+        error && console.error(error)
+      }
 
-  if (me.name == "AxiosError" )
-    return <>
-      <SignInButton />
-      <pre>{JSON.stringify(me, null, 2)}</pre>
-    </>
+    })
+    // return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
+    // const me = await callApi("https://graph.microsoft.com/v1.0/me", token!);
+    //const myClasses = await callFullApi("https://graph.microsoft.com/beta/education/me/classes", token!);
+    
+  } 
 
   return (
     <>
-    <div>{JSON.stringify(data, null, 2)}</div>
-      <SignInButton />
-      <div>Current Week: {currentWeek()}</div>
-      <div className={styles.weekScale}>
-        <div className={styles.gtPOne}>&gt; 1 week ago</div>
-        <div className={styles.pOne}>1 week ago</div>
-        <div className={styles.zero}>This week</div>
-        <div className={styles.nOne}>Next week</div>
-        <div className={styles.ltNOne}>More than next week</div>
-        
-      </div>
+    <div>{JSON.stringify(token)}</div>
+    <form action={refreshClasses}>
+      <button type="submit" disabled={!token}>Resfresh Classes</button>
+    </form>
 
-      <div className={styles.displayClasses}>
-        <div>7</div>
-        <div>8</div>
-        <div>9</div>
-        <div>10</div>
-        <div>11</div>
-        <div>12</div>
-        <div>13</div>
+    <form action={refreshAssignments}>
+      <button type="submit" disabled={!token}>Resfresh Assignments</button>
+    </form>
 
-        <div>{displayClass('23-7A/IT1')}</div>
-        <div>{displayClass('23-8AIT1')}</div>
-        <div>{displayClass('23-9AIT1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7B/It1')}</div>
-        <div>{displayClass('23-8BIT1')}</div>
-        <div>{displayClass('23-9BIT1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7C/It1')}</div>
-        <div>{displayClass('23-8CIT1')}</div>
-        <div>{displayClass('23-9CIT1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7D/It1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7A/Dt1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-9A/Dt')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7B/DT1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-9B/Dt')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7C/Dt1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-9C/Dt')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-
-        <div>{displayClass('23-7D/Dt1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-10BS1')}</div>
-        <div>{displayClass('23-11BS1')}</div>
-        <div>{displayClass('23-12BS')}</div>
-        <div>{displayClass('23-13BS')}</div>
-        
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-10BS2')}</div>
-        <div>{displayClass('23-11BS2')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-10EC')}</div>
-        <div>{displayClass('23-11EC1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-10EC1')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('23-10DT')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        <div>{displayClass('')}</div>
-        
-
-      </div>
-
-      <h1>Me</h1>
-      <pre>{JSON.stringify( me, null, 2)}</pre>
-      <h1>Classes</h1>
-      <pre>{JSON.stringify( myClasses, null, 2)}</pre>
-      <h1>Assignments</h1>
-     <pre>{JSON.stringify( myAssignments, null, 2)}</pre>
     </>
   )
 }
