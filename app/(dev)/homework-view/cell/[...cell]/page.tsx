@@ -8,6 +8,7 @@ import parseISO from 'date-fns/parseISO'
 import styles from './page.module.css';
 import Link from "next/link";
 
+import DisplayAssigment from '../../display-assignment';
 
 async function callApi (uri: string, token: string) {
 
@@ -96,13 +97,13 @@ export default async function Page({params}: {params: {cell: string[]}})  {
       const getAssignmentsFromDB = async (classId:string, w:string) => {
         
         console.log("building Assignments FromDB")
-        const weekStart = format(startOfWeek(parseISO(w)), "yyyy-MM-dd");
-        const weekEnd = format(endOfWeek(parseISO(w)), "yyyy-MM-dd");
+        const weekStart = startOfWeek(parseISO(w)).toISOString();
+        const weekEnd = endOfWeek(parseISO(w)).toISOString();
         console.log(classId, weekStart, weekEnd)
         const {data: assignmentsArr, error} = await supabase.from("msTeamsAssignments")
                 .select("id, classId, displayName, status, dueDateTime")
                 .eq("classId", classId)
-                // .eq("status", "assigned")
+               // .eq("status", "assigned")
                 .gte("dueDateTime", weekStart)
                 .lte("dueDateTime", weekEnd)
                 ;
@@ -131,10 +132,8 @@ export default async function Page({params}: {params: {cell: string[]}})  {
         assignmentArr && assignmentArr!.map((a: any, i: any) => <div key={i}>
 
             <h4>{a.displayName}</h4>
-            <div className={styles.subTitle}>
-                <div>Due Date: {a.dueDateTime}</div>
-                <div>Status: {a.status}</div>    
-            </div>
+            <DisplayAssigment title={a.displayName} status={a.status} dueDateTime={a.dueDateTime}/>
+            
             </div>)
       
     }

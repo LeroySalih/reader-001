@@ -90,16 +90,16 @@ export default async function SubjectPlan () {
   
     const getAssignmentsForClassWeek = (myAssignmentArr:any, classDisplayName:any, week:any) => {
 
-      const weekStart = format(startOfWeek(parseISO(week)), "yyyy-MM-dd");
-      const weekEnd = format(endOfWeek(parseISO(week)), "yyyy-MM-dd");
+      const weekStart = startOfWeek(parseISO(week)).toISOString();
+      const weekEnd = endOfWeek(parseISO(week)).toISOString();
 
       console.log(weekStart, weekEnd);
 
       const result = myAssignmentArr
-            .filter((a:any) => a.msTeamsClasses.displayName == classDisplayName && 
-            a.dueDateTime >= weekStart &&
-            a.dueDateTime < weekEnd &&
-            a.status == "assigned"
+            .filter((a:any) => a.msTeamsClasses.displayName == classDisplayName 
+            && a.dueDateTime >= weekStart 
+            && a.dueDateTime < weekEnd 
+            && a.status == "assigned"
             )
 
       return result;
@@ -126,7 +126,9 @@ export default async function SubjectPlan () {
       style={{"gridTemplateColumns": `repeat(${filterClasses.length + 1}, 1fr)`}}> 
       <div></div>
       {
-        filterClasses.map((classDisplayName:any) => <div className={styles.tableHeader}>{classDisplayName.substring(3,8)}</div>)
+        filterClasses.map((classDisplayName:any) => <div className={styles.tableHeader}>
+         <Link href={`/homework-view/subject/${classDisplayName}`}> {classDisplayName.substring(3,8)}</Link>
+        </div>)
       }
 
       {weeks.map((w: any) => {return [
@@ -138,7 +140,7 @@ export default async function SubjectPlan () {
 
         return <div key={i} className={`${styles.cell} ${cellFormat(w, count)} ${isCurrent(w)}`}>
         {
-            count > 0 ? <Link href={`/homework-view/${classDisplayName}/${w}`}>{
+            count > 0 ? <Link href={`/homework-view/cell/${classDisplayName}/${w}`}>{
                 count 
                 }
                 </Link> : count    

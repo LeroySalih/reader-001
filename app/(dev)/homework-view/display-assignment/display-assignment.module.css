@@ -1,0 +1,27 @@
+.cell {
+    border : silver 1px solid;
+    background-color: aliceblue;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.subHeader{
+    display: flex;
+}
+
+.title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.status {
+    font-size: 0.8rem;
+    color: rgb(95, 94, 94);
+}
+
+.dueDateTime {
+    font-size: 0.8rem;
+    margin-right: 5rem;
+    color: rgb(95, 94, 94);
+}

@@ -101,17 +101,37 @@ export default async function Home() {
     
   }
 
-  async function refreshAssignments () {
+  async function dbLog (type: string, message: string) {
+
     'use server'
     console.log('refreshAssignments called')
     const cookieStore = cookies();
     const supabase = createServerComponentClient({ cookies: () => cookieStore })
+
+    const {error} = await supabase.from("log").insert({type, message})
+
+    error && console.error(error);
+
+  }
+
+  async function refreshAssignments () {
+    'use server'
+    
+    console.log('refreshAssignments called')
+   // dbLog('info', 'refreshAssignments called');
+
+    const cookieStore = cookies();
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+
+    await supabase.from("log").insert({type: 'info', message: 'refreshAssignments called'})
 
     // const { data } = await supabase.from("test").select();
     const user = await supabase.auth.getUser()
     const session = await supabase.auth.getSession();
     
     const token = session?.data?.session?.provider_token;
+
+    
 
     const {data, error} = await supabase.from("msTeamsClasses")
                         .select("id, displayName")
@@ -146,8 +166,12 @@ export default async function Home() {
           console.log(ud.instructions)
         }
         const {error} = await supabase.from("msTeamsAssignments").upsert(ud)
-        error && console.error(error)
+        !error && await supabase.from("log").insert({type: 'info', message: `Added ${ud.id}`}); 
+        error && await supabase.from("log").insert({type: 'error', message: error.message});
+        error && console.error(error) 
       }
+
+      await supabase.from("log").insert({type: 'info', message: 'refreshAssignments complete'})
 
     })
     // return <pre>Supabase working! {JSON.stringify(user, null, 2)}</pre>
