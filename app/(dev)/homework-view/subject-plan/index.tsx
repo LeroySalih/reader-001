@@ -99,7 +99,7 @@ export default async function SubjectPlan () {
             .filter((a:any) => a.msTeamsClasses.displayName == classDisplayName 
             && a.dueDateTime >= weekStart 
             && a.dueDateTime < weekEnd 
-            && a.status == "assigned"
+            && (a.status == "assigned" || a.status == "scheduled")
             )
 
       return result;
