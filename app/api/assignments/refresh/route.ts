@@ -71,17 +71,25 @@ export async function GET(request: Request) {
       return Response.json({status: false, message: "No token found"} )
     } ;
 
-    
-
+  
     const {data, error} = await supabase.from("msTeamsClasses")
                         .select("id, displayName")
                         .in("displayName", ['23-11CS', '23-10CS', 
                         '23-13BS', '23-12BS', '23-11BS1', '23-11BS2', '23-11BS1', '23-10BS1', '23-10BS2',
                         '23-11EC1', '23-11EC', '23-10EC', '23-10EC1',
-                        '23-11IT', '23-10IT']);
+                        '23-11IT', '23-10IT', '23-10DT']);
 
 
     const myUpsertData: any = [];
+
+        // use this url to find a specific class
+        // https://graph.microsoft.com/v1.0/groups?$filter=startswith(displayName, '23-10DT')
+
+        // #todo
+      // Using the beta Graphi API, you can access the module field of an assignment.
+      // https://graph.microsoft.com/beta/education/classes/265fd007-e375-4f03-9697-756b050ee012/assignments
+      // "moduleUrl": "https://graph.microsoft.com/v1.0/education/classes/265fd007-e375-4f03-9697-756b050ee012/modules/a8368cec-139b-4ad8-8464-92032356a6f1/",
+
         //@ts-ignore
         const asyncRes = await Promise.all(data?.map(async (d) => {
 

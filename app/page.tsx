@@ -104,6 +104,11 @@ export default async function Home() {
     
   }
 
+  if (!token) {
+    return (
+      <h1>User not signed in</h1>
+    )
+  }
   return (
     <>
     

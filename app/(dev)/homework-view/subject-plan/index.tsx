@@ -51,7 +51,8 @@ const filterClasses = [
     '23-11CS', '23-10CS', 
     '23-13BS', '23-12BS', '23-11BS1', '23-11BS2',   '23-10BS1', '23-10BS2',
     '23-11EC1',  '23-10EC', '23-10EC1',
-    '23-11IT', '23-10IT'
+    '23-11IT', '23-10IT',
+    '23-10DT'
   ]
 
 export default async function SubjectPlan () {
