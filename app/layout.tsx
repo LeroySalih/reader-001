@@ -29,7 +29,7 @@ export default function RootLayout({
         
         <div className={styles.navBar}>
           <div>
-          <Link href="/">Home</Link> | <Link href="/homework-view">Homework View</Link>
+          <Link href="/">Home</Link> | <Link href="/homework-view">Homework View</Link> | <Link href="/formative-check/classes">Formative Check</Link>
           </div>
           <div>
             <SignInButton />
