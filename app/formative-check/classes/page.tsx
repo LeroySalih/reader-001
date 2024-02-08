@@ -5,9 +5,8 @@ import styles from './formative-check.module.css';
 
 const getData = async (supabase: SupabaseClient<any,"public", any> ) => {
 
-    let { data, error } = await supabase.from('vw_formative_class_list').select("classId")
+    let { data, error } = await supabase.from('vw_formative_class_progress').select("classId, progress")
 
-    
     if (error) console.error(error)
     else console.log(data)
 
@@ -16,6 +15,7 @@ const getData = async (supabase: SupabaseClient<any,"public", any> ) => {
 }
 
 const Page = async () => {
+
     const cookieStore = cookies();
     const supabase = createServerComponentClient({ cookies: () => cookieStore })
 
@@ -37,18 +37,19 @@ const Page = async () => {
         <div className={styles.displayPupilScores}>
             
             <div>Class Id</div>
-            <div>Class Id</div>
-            
+            <div>Progress</div>
+
             {
-                data && data.reduce((prev: string[], curr: {classId: string}) => {
-                    
-                    prev.push(curr.classId)
-                    
-                    return prev
-                }, []).map((o: string, i: number) => <div key={i}>
-                    <a href={`/formative-check/classes/${o}`}>{o}</a>
-                </div>)
+                data && data.map((c:any, i:number) => [
+                    <div>
+                        <a href={`/formative-check/classes/${c.classId}`}>{c.classId}</a>
+                    </div>, 
+                    <div>
+                        {(c.progress * 100).toFixed(0)}%
+                    </div>])
             }
+            
+           
             
         </div>
     </>

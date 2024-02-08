@@ -5,7 +5,7 @@ import styles from './formative-check.module.css';
 
 const getData = async (supabase: SupabaseClient<any,"public", any>, classid : string ) => {
 
-    let { data, error } = await supabase.from('vw_formative_class_progress').select("classId, unit, Pct").eq("classId", classid)
+    let { data, error } = await supabase.from('vw_formative_class_unit_progress').select("classId, unit, Pct").eq("classId", classid)
 
     
     if (error) console.error(error)
@@ -43,7 +43,7 @@ const Page = async ({params}: {params: {classid: string}}) => {
                 data && data.reduce((prev: string[], curr: {classId: string, unit: string, Pct: string }) => {
                     
                     prev.push(curr.unit)
-                    prev.push((parseFloat(curr.Pct) * 100).toFixed(0)); 
+                    prev.push((parseFloat(curr.Pct || "0") * 100).toFixed(0)); 
                     return prev
                 }, []).map((o: string, i: number) => <div key={i}>{o}</div>)
             }
