@@ -5,7 +5,7 @@ import styles from './formative-check.module.css';
 
 const getData = async (supabase: SupabaseClient<any,"public", any> ) => {
 
-    let { data, error } = await supabase.from('vw_formative_class_progress').select("classId, progress")
+    let { data, error } = await supabase.from('vw_formative_class_unit_progress').select("classId, unit, Pct")
 
     if (error) console.error(error)
     else console.log(data)
@@ -33,26 +33,38 @@ const Page = async () => {
     return <>
         <h1>Formative Check</h1>
         
+        { data && DisplayClassProgress ("23-11-BS1", data) }
+        { data && DisplayClassProgress ("23-11-BS2", data) }
+        { data && DisplayClassProgress ("23-10BS1", data) }
+        { data && DisplayClassProgress ("23-10-BS2", data) }
+                
+
+        { data && DisplayClassProgress ("23-10DT", data) }
+        
+
+    </>
+}
+
+
+const DisplayClassProgress = (classId:string, data: {unit: string, classId: string, Pct: number}[]) => {
+
+    const filtered = data.filter((c) => c.classId == classId);
+
+    const unitProgress = filtered.reduce((prev, cur) => prev + cur.Pct, 0) / filtered.length
+
+    return <>
         
         <div className={styles.displayPupilScores}>
-            
-            <div>Class Id</div>
-            <div>Progress</div>
-
-            {
-                data && data.map((c:any, i:number) => [
-                    <div>
-                        <a href={`/formative-check/classes/${c.classId}`}>{c.classId}</a>
-                    </div>, 
-                    <div>
-                        {(c.progress * 100).toFixed(0)}%
-                    </div>])
-            }
-            
-           
-            
+            <div><h1>{classId} </h1></div>
+            <div><h1>({(unitProgress * 100).toFixed()}%)</h1></div>
+       
+        {data && data
+            .filter(c => c.classId == classId)
+            .sort((a,b) => a.unit > b.unit ? 1 : -1)
+            .map((u, i) => [<div>{u.unit}</div>, <div>{(u.Pct*100).toFixed(0)}</div>])
+        }
         </div>
-    </>
+        </>
 }
 
 
