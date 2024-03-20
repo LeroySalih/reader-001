@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "kill": "kill -9 $(lsof -ti:3000,3001)"
+    "kill": "kill -9 $(lsof -ti:3000,3001)",
+    "bump": "npm run build && git add . && git commit -m 'Build' && git push origin"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.8.1",

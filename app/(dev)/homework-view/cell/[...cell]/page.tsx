@@ -101,7 +101,7 @@ export default async function Page({params}: {params: {cell: string[]}})  {
         const weekEnd = endOfWeek(parseISO(w)).toISOString();
         console.log(classId, weekStart, weekEnd)
         const {data: assignmentsArr, error} = await supabase.from("msTeamsAssignments")
-                .select("id, classId, displayName, status, dueDateTime")
+                .select("id, classId, displayName, status, dueDateTime, instructions")
                 .eq("classId", classId)
                // .eq("status", "assigned")
                 .gte("dueDateTime", weekStart)
@@ -132,7 +132,7 @@ export default async function Page({params}: {params: {cell: string[]}})  {
         assignmentArr && assignmentArr!.map((a: any, i: any) => <div key={i}>
 
             <h4>{a.displayName}</h4>
-            <DisplayAssigment title={a.displayName} status={a.status} dueDateTime={a.dueDateTime}/>
+            <DisplayAssigment title={a.displayName} status={a.status} dueDateTime={a.dueDateTime} instructions={a.instructions}/>
             
             </div>)
       

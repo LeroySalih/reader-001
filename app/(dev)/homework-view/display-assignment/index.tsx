@@ -16,13 +16,16 @@ const formatWeeksDistance = (dueDateTime: string) => {
     
 }
 
-export default function DisplayAssignment ({title, status, dueDateTime}: {title: string, status: string, dueDateTime: string}) {
+export default function DisplayAssignment ({title, status, dueDateTime, instructions}: {title: string, status: string, dueDateTime: string, instructions: string}) {
     return <div className={styles.cell}>
         <div className={styles.title}>{title}</div>
         <div className={styles.subHeader}>
             <div className={styles.dueDateTime}>For Week: {format(startOfWeek(parseISO(dueDateTime)), "yyyy-MM-dd")}</div>
             <div className={styles.dueDateTime}>{ formatWeeksDistance(dueDateTime) }</div>
             <div className={styles.status}>{status}</div>
+        </div>
+        <div>
+            <div dangerouslySetInnerHTML={{__html:instructions}}></div>{}
         </div>
     </div>
 }

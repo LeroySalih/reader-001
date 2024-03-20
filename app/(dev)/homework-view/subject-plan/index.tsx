@@ -76,7 +76,7 @@ export default async function SubjectPlan () {
     const getAssignmentsFromDB = async (filterClasses:any) => {
 
       const {data: classesArr, error} = await supabase.from("msTeamsAssignments")
-                                                      .select("id, msTeamsClasses(displayName), displayName, dueDateTime, status")
+                                                      .select("id, msTeamsClasses(displayName), displayName, dueDateTime, status, instructions")
                                                       .order("displayName")
 
         if (error) {
