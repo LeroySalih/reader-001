@@ -35,7 +35,7 @@ export default function RefreshAssignments () {
         console.log(`Found and deleted ${dataDelete?.length} items 2`);
         await supabase.from("log").insert({type:"info", message: `Deleted ${dataDelete?.length} assignments`});
 
-
+        console.log(`${baseUrl}api/assignments/refresh`)
         const response = await fetch(`${baseUrl}api/assignments/refresh`);
         const data = await response.json()
         console.log(data);

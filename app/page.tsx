@@ -40,6 +40,8 @@ async function callFullApi(uri : string, token : string) {
 
   let values:any = [];
 
+  console.log("token:", token);
+  console.log("Calling ", uri);
   let response = await callApi(uri, token);
 
   values = values.concat(response.value);
@@ -113,7 +115,7 @@ export default async function Home() {
     <>
     
     <form action={refreshClasses}>
-      <button type="submit" disabled={!token}>Resfresh Classes</button>
+      <button type="submit" disabled={!token}>Refresh Classes</button>
     </form>
     
     
