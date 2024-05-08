@@ -1,52 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import axios from 'axios';
-import { dbLog } from "../../lib";
 
-async function callApi (uri: string, token: string) {
-
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    };
-
-    console.log(`request made to ${uri} at:  ${new Date().toString()}`);
-
-    try {
-      const response = await axios.get(uri, options);
-      return response.data;
-    } catch (error) {
-        console.error(error)
-        return error;
-    }
-
-}; 
-
-async function callFullApi(uri : string, token : string) {
-
-  console.log("Calling MS Graph API", uri, token);
-
-  let values:any = [];
-
-  let response = await callApi(uri, token);
-
-  values = values.concat(response.value);
-
-  while (response['@odata.nextLink']) {
-    console.log("nextLink detected", response['@odata.nextLink'])
-    response = await callApi(response['@odata.nextLink'], token);
-    values = values.concat(response.value);
-  }
-  // console.log(response.value);
-  
-  //values = values.concat(response.value);
-
-  return values;
-}
-
-
-
+import { dbLog, callApi, callFullApi } from "../../lib";
 
 
 export const dynamic = 'force-dynamic';
@@ -71,7 +26,6 @@ export async function GET(request: Request) {
       return Response.json({status: false, message: "No token found"} )
     } ;
 
-  
     const {data, error} = await supabase.from("msTeamsClasses")
                         .select("id, displayName")
                         .in("displayName", ['23-11CS', '23-10CS', 
