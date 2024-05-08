@@ -4,6 +4,7 @@ import styles from './page.module.css'
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import RefreshAssignments from './components/refresh-assignments';
+import RefreshMarking from './components/refresh-marking';
 import SignInButton from './login';
 import axios from 'axios';
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
@@ -120,6 +121,7 @@ export default async function Home() {
     
     
     <RefreshAssignments/>
+    <RefreshMarking/>
     <ClearLog/>
     <DisplayLog/>
 
