@@ -87,6 +87,8 @@ const getOutcome = async (token: string, classId: string, assignmentId: string, 
 
 export const refreshAssignment = async ( supabase: SupabaseClient<any, "public", any>, token: string, classId: string, assignmentId: string) => {
 
+  await supabase.from("updateTracker").insert({table: "outcomes", event: "Update started"});
+
   const submissions = await getSubmissions(token, classId, assignmentId)
 
   const outcomes = []
@@ -100,6 +102,8 @@ export const refreshAssignment = async ( supabase: SupabaseClient<any, "public",
   }
 
   const {data, error } = await updateOutcomes(supabase, outcomes);
+
+  await supabase.from("updateTracker").insert({table: "outcomes", event: "Update completed"});
 
   return {data, error}
 

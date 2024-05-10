@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import SignInButton from '../../login';
+import SignInButton from '../../components/sign-in/login';
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import parseISO from 'date-fns/parseISO'
 import styles from './page.module.css';

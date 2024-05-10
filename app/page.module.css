@@ -55,3 +55,7 @@
 .gtPOne {
     background-color:crimson;
 }
+
+.displayCards{
+    display: flex;
+}

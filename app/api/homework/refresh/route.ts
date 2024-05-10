@@ -36,6 +36,8 @@ const sleep = async (duration: number) => {
 
 export async function GET(request: Request) {
 
+    console.log("/api/homework/refresh called");
+    
     const cookieStore = cookies();
     const supabase = createServerComponentClient({ cookies: () => cookieStore })
 

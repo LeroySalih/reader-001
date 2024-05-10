@@ -2,7 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import styles from './layout.module.css'
-import SignInButton from './login';
+import SignInButton from './components/sign-in/login';
 import Link from 'next/link';
 
 import * as React from 'react';
@@ -49,7 +49,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Oswald&family=Poppins&family=Roboto:wght@300&display=swap" rel="stylesheet" />
       </head>
       <body className={`${styles.page} ${inter.className}`}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex' }} className={styles.boxLayout}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -79,20 +79,33 @@ export default function RootLayout({
         </Toolbar>
         <Divider />
         <List>
-          {['Update', 'Classes', 'Formative', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
+          {
+            [
+                {label: 'Home', href: "/", icon: <MailIcon />},
+                {label: 'Planning', href: "/planning", icon: <MailIcon />},
+                {label: 'Formative', href: "/formative-check/classes", icon: <MailIcon />},
+                {label: 'Homework', href: "/homework-check", icon: <MailIcon />}
+              ].map((mi: {label: string, href: string, icon: any}, i) => (
+              <Link href={mi.href}>
+              <ListItem key={mi.label} disablePadding>
+                <ListItemButton>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {mi.icon}
                 </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+                <ListItemText primary={mi.label} />
+                </ListItemButton>
+              </ListItem>
+              </Link>
+              ) 
+
+            )
+            
+          }
+          
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          {['Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
@@ -106,13 +119,11 @@ export default function RootLayout({
       </Drawer>
       <Box
         component="main"
+        className={styles.boxLayout}
         sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
       >
         <Toolbar />
-        <div>
-          <Link href="/">Home</Link> | <Link href="/homework-view">Homework View</Link> | <Link href="/formative-check/classes">Formative Check</Link> | <Link href="/homework-check">Homework Check</Link>
-          </div>
-          
+  
         {children}
         
       </Box>

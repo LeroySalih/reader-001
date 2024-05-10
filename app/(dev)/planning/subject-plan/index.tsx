@@ -128,7 +128,7 @@ export default async function SubjectPlan () {
       <div></div>
       {
         filterClasses.map((classDisplayName:any) => <div className={styles.tableHeader}>
-         <Link href={`/homework-view/subject/${classDisplayName}`}> {classDisplayName.substring(3,8)}</Link>
+         <Link href={`/planning/subject/${classDisplayName}`}> {classDisplayName.substring(3,8)}</Link>
         </div>)
       }
 
@@ -141,7 +141,7 @@ export default async function SubjectPlan () {
 
         return <div key={i} className={`${styles.cell} ${cellFormat(w, count)} ${isCurrent(w)}`}>
         {
-            count > 0 ? <Link href={`/homework-view/cell/${classDisplayName}/${w}`}>{
+            count > 0 ? <Link href={`/planning/cell/${classDisplayName}/${w}`}>{
                 count 
                 }
                 </Link> : count    

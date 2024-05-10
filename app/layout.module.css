@@ -3,6 +3,11 @@
     min-width:500px;
     width: 80%;
     margin: auto;
+    background-color: ghostwhite;
+}
+
+.boxLayout {
+    background-color: ghostwhite;
 }
 
 .navBar {

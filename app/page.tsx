@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 
 import RefreshAssignments from './components/refresh-assignments';
 import RefreshMarking from './components/refresh-marking';
-import SignInButton from './login';
+import SignInButton from './components/sign-in/login';
 import axios from 'axios';
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import previousSunday from 'date-fns/previousSunday'
@@ -18,7 +18,8 @@ import parseISO from 'date-fns/parseISO'
 import DisplayLog from "./components/display-log";
 import { dbLog } from './api/lib';
 import ClearLog from './components/clear-log';
-
+import TeamsAssignmentsRehresh from './components/teams-assignments-refresh';
+import TeamsHomeworkRehresh from './components/teams-homework-refresh';
 
 async function callApi (uri: string, token: string) {
 
@@ -86,8 +87,8 @@ export default async function Home() {
 
     'use server'
     console.log('refreshClasses called')
-    const cookieStore = cookies();
-    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    
+    const supabase = createClient(); 
 
     const { data } = await supabase.from("test").select();
     const user = await supabase.auth.getUser()
@@ -118,16 +119,10 @@ export default async function Home() {
   return (
     <>
     <h1>Welcome {user.data.user?.email}</h1>
-    <form action={refreshClasses}>
-      <button type="submit" disabled={!token}>Refresh Classes</button>
-    </form>
-    
-    
-    <RefreshAssignments/>
-    <RefreshMarking/>
-    <ClearLog/>
-    <DisplayLog/>
-
+    <div className={styles.displayCards} >
+      <TeamsAssignmentsRehresh/>
+      <TeamsHomeworkRehresh/>
+    </div>
     </>
   )
 }

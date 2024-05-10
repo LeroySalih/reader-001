@@ -1,4 +1,4 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
 
 import { dbLog, callApi, callFullApi } from "../../lib";
@@ -10,8 +10,7 @@ export async function GET(request: Request) {
 
     const messages:any[] = [];
 
-    const cookieStore = cookies();
-    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    const supabase = createClient();
 
 
     console.log('API refresh called');
@@ -19,6 +18,8 @@ export async function GET(request: Request) {
 
     const session = await supabase.auth.getSession();
   
+    await supabase.from("updateTracker").insert({table: "assignments", event: "Update started"});
+
     const token = session?.data?.session?.provider_token;
 
     if (!token){
@@ -83,6 +84,8 @@ export async function GET(request: Request) {
             })
             )
 
+    await supabase.from("updateTracker").insert({table: "assignments", event: "Update completed"});
+    
     dbLog("info", `Refresh completed for all classes`)
     return Response.json( {status: true, message: "OK", token, messages})
 }

@@ -1,12 +1,11 @@
 "use client"
 
-import { createClient } from '@supabase/supabase-js'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/app/utils/supabase/client';
 import { useEffect, useState } from "react";
 import { Session, User } from '@supabase/supabase-js';
+import Button from '@mui/material/Button';
 
 export default function RefreshAssignments () {
-
 
     const [user, setUser] = useState<User | null>(null);
 
@@ -17,7 +16,7 @@ export default function RefreshAssignments () {
     // console.log("env vars", baseUrl, dbUrl, dbAnnonKey);
 
     // Create a single supabase client for interacting with your database
-    const supabase = createClientComponentClient({supabaseUrl, supabaseKey}) 
+    const supabase = createClient(); 
 
     const refresh = async () => {
         // console.log("Refresh called");
@@ -52,10 +51,7 @@ export default function RefreshAssignments () {
             setUser(session?.user ?? null);
         })
 
-
-        return () => {
-            
-        }
+        return () => {}
     },[])
-    return <button disabled={!user} onClick={refresh}>Refresh Assignments</button>
+    return <Button onClick={refresh}>Refresh Assignments</Button>
 }

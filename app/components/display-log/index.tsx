@@ -1,14 +1,14 @@
 "use client"
 
 
-import {createPagesBrowserClient} from "@supabase/auth-helpers-nextjs";
+import {createClient} from "@/app/utils/supabase/client";
 import { useEffect, useState } from "react";
 import styles from "./display-log.module.css";
 
 const DisplayLog = () => {
     const [entries, setEntries] = useState<any[] | null>([]);
 
-    const supabase = createPagesBrowserClient({supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!});
+    const supabase = createClient();
 
     const updateLog = (log:any) => {
         //console.log("Adding log entry", log);
