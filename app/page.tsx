@@ -26,7 +26,7 @@ export default async function Home() {
     <div className={styles.displayCards} >
       <TeamsAssignmentsRefresh/>
       <TeamsHomeworkRefresh/>
-      <FormativesHomeworkRefresh/>
+      <FormativesHomeworkRefresh/> 
     </div>
     </>
   )
