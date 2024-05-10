@@ -35,9 +35,9 @@ const TeamsAssignmentsRefresh = async () => {
                 .maybeSingle();
 
     return <>
-        { 
-        <RefreshAssignments/> 
-        }
+        <h3>Assignments</h3>
+        {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)} 
+        <RefreshAssignments/>
          
     </>
 }
