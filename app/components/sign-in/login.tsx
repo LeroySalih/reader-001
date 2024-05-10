@@ -96,7 +96,7 @@ export default function SignInButton() {
 
     return <>
       {user == null && <button onClick={handleSignIn}>Sign In</button>}
-      {user != null && <div>{user.email?.split("@")[0]}<button onClick={handleSignOut}>Sign Out</button></div>}
+      {user != null && <div style={{display:"flex", justifyContent: "space-around", marginBottom: "0.5rem"}}>{user.email?.split("@")[0]}<button onClick={handleSignOut}>Sign Out</button></div>}
     </>
 
 }

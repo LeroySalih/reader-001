@@ -29,18 +29,17 @@ const TeamsAssignmentsRefresh = async () => {
     const supabase = createClient();
 
     const {data, error} = await supabase.from("updateTracker")
-                                      .select("created_at, event")
-                                      .eq("table", "homework")
-                                      .order("created_at", {ascending: false})
-                                      .limit(1)
-                                      .maybeSingle();
+                            .select("created_at, event")
+                            .eq("table", "formative")
+                            .order("created_at", {ascending: false})
+                            .limit(1).maybeSingle();
 
     return <>
          <Card sx={{ minWidth: 275 }} className={styles.card}> 
             <CardContent>
                 
                 <Typography variant="h5" component="div">
-                Homework
+                Formatives
                 </Typography>
 
                 <Typography sx={{ fontSize: 12 }} color="text.secondary">
@@ -49,7 +48,8 @@ const TeamsAssignmentsRefresh = async () => {
 
             </CardContent>
             <CardActions>
-                <RefreshMarking/>
+                {// <RefreshMarking/>
+                }
             </CardActions>
         </Card>
     </>

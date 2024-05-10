@@ -27,7 +27,12 @@ const TeamsAssignmentsRefresh = async () => {
 
     const supabase = createClient();
 
-    const {data, error} = await supabase.from("updateTracker").select("created_at, event").eq("table", "assignments").order("created_at", {ascending: false}).limit(1).maybeSingle();
+    const {data, error} = await supabase.from("updateTracker")
+                .select("created_at, event")
+                .eq("table", "assignments")
+                .order("created_at", {ascending: false})
+                .limit(1)
+                .maybeSingle();
 
     return <>
          <Card sx={{ minWidth: 275 }} className={styles.card}>
@@ -36,7 +41,7 @@ const TeamsAssignmentsRefresh = async () => {
                 Assignments
                 </Typography>
                 <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                {data?.event}: {DateTime.fromISO(data?.created_at).toISODate()} {DateTime.fromISO(data?.created_at).toISOTime()?.substring(0,8)} 
+                {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)} 
                 </Typography>        
             </CardContent>
             <CardActions>
