@@ -4,6 +4,7 @@ import { createClient } from "./utils/supabase/server";
 import TeamsAssignmentsRefresh from "@/app/components/teams-assignments-refresh";
 import TeamsHomeworkRefresh from "@/app/components/teams-homework-refresh";
 import FormativesHomeworkRefresh from "@/app/components/formatives-homework-refresh";
+import { Suspense } from 'react';
 
 export default async function Home() {
 
@@ -24,7 +25,11 @@ export default async function Home() {
     <>
     <h1>Welcome {user.data.user?.email}</h1>
     <div className={styles.displayCards} >
-      
+      <Suspense>
+        <TeamsAssignmentsRefresh/>
+        <TeamsHomeworkRefresh/>
+        <FormativesHomeworkRefresh/> 
+      </Suspense>
     </div>
     </>
   )
