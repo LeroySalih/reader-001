@@ -5,6 +5,7 @@ import '@fontsource/roboto/700.css';
 import { Inter } from 'next/font/google'
 import './globals.css'
 import type { Metadata } from 'next'
+import Loading from "./loading";
 
 import AppBar from "./layout-comp/app-bar";
 import SideBar from "./layout-comp/side-bar";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 }
 import styles from "./layout.module.css";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 
 
@@ -42,7 +43,9 @@ const RootLayout  = ({
         <div style={{display: "flex"}}>
             <SideBar></SideBar>
             <div style={{display: "flex", flexDirection: "column"}}>
-            {children}
+                <Suspense fallback={<Loading/>}>
+                {children}
+                </Suspense>
             </div>
         </div>
     </body>

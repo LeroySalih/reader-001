@@ -25,7 +25,7 @@ export default async function Home() {
     <>
     <h1>Welcome {user.data.user?.email}</h1>
     <div className={styles.displayCards} >
-      <Suspense>
+      <Suspense fallback={<h1>Loading</h1>}>
         <TeamsAssignmentsRefresh/>
         <TeamsHomeworkRefresh/>
         <FormativesHomeworkRefresh/> 
