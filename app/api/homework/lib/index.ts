@@ -17,7 +17,7 @@ const parseOutcomesResponse = (responses: any) => {
 
   console.log("pointsOutcome", pointsOutcome);
 
-  if (pointsOutcome.length ==  1 && "points" in pointsOutcome && pointsOutcome["points"] != null){
+  if (pointsOutcome.length ==  1 && "points" in pointsOutcome[0] && pointsOutcome[0]["points"] != null){
     const points = pointsOutcome[0].points.points;
     console.log("points", points);
     const pointsObj = {outcomeId: pointsOutcome[0]["id"], points}
@@ -63,13 +63,13 @@ const getSubmissions = async (token: string, classId: string, assignmentId: stri
 
   // console.log("Submissions", resp.map((s) => s.id));
 
-  return resp.map((s: any) => s.id);
+  return resp.map((s: any) => ({id: s.id}));
 
 }
 
-const getOutcome = async (token: string, classId: string, assignmentId: string, submissionId: string) => {
+const getOutcome = async (token: string, classId: string, assignmentId: string, submission: {id: string}) => {
 
-  const url = `https://graph.microsoft.com/beta/education/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}/outcomes`;
+  const url = `https://graph.microsoft.com/beta/education/classes/${classId}/assignments/${assignmentId}/submissions/${submission.id}/outcomes`;
 
   const resp = await callFullApi(url, token);
 
@@ -77,7 +77,11 @@ const getOutcome = async (token: string, classId: string, assignmentId: string, 
 
   const points = parseOutcomesResponse(resp);
 
-  return Object.assign ({}, {...context}, {...points});
+  const outcome = Object.assign ({}, {...context}, {...points})
+
+  console.log("outcome", outcome);
+
+  return outcome;
 
 }
 
@@ -88,7 +92,7 @@ export const refreshAssignment = async ( supabase: SupabaseClient<any, "public",
   const outcomes = []
 
   for (const submission of submissions) {
-
+    console.log("Submission", submission)
     const outcome = await getOutcome(token, classId, assignmentId, submission )
 
     outcomes.push(outcome);  

@@ -18,14 +18,14 @@ export async function callApi (uri: string, token: string) {
       }
     };
 
-    console.log(`request made to ${uri} at:  ${new Date().toString()}`);
+    // console.log(`request made to ${uri} at:  ${new Date().toString()}`);
 
     try {
       const response = await axios.get(uri, options);
       return response.data;
-    } catch (error) {
+    } catch (error:any) {
         console.error(error)
-        return error;
+        throw new Error(error.message);
     }
 
 }; 

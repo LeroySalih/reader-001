@@ -1,27 +1,40 @@
-
-import {createRouteHandlerClient} from "@supabase/auth-helpers-nextjs"
-import {cookies} from "next/headers";
-import { NextResponse } from "next/server";
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+import { type CookieOptions, createServerClient } from '@supabase/ssr'
 
 export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/'
 
-    console.info("Route called");
-    
-    const requestUrl = new URL(request.url)
-    const code = requestUrl.searchParams.get('code')
-
-    if (code) {
-        const supabase = createRouteHandlerClient({cookies});
-        console.info(code);
-        await supabase.auth.exchangeCodeForSession(code);
+  if (code) {
+    const cookieStore = cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.delete({ name, ...options })
+          },
+        },
+      }
+    )
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+      console.log("Redirecting to", `${origin}${next}`)
+      return NextResponse.redirect(process.env.NEXT_PUBLIC_BASE_URL!)
+      // return NextResponse.redirect(`${origin}${next}`)
     }
+  }
 
-    console.info("Origin:", requestUrl)
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    console.info("BaseUrl", baseUrl)
-    // Object.keys(process.env).forEach((k) => k.includes('NEXT_PUBLIC') && console.log(k));
-    // console.log(process.env);
-    const redirectUrl = `${baseUrl}${requestUrl.search}`
-    console.info("redirectUrl", redirectUrl);
-    return NextResponse.redirect(redirectUrl);
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }

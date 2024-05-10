@@ -1,8 +1,10 @@
 import Image from 'next/image'
 import styles from './page.module.css'
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "./utils/supabase/server";
+
 import { cookies } from "next/headers";
+
 import RefreshAssignments from './components/refresh-assignments';
 import RefreshMarking from './components/refresh-marking';
 import SignInButton from './login';
@@ -16,6 +18,7 @@ import parseISO from 'date-fns/parseISO'
 import DisplayLog from "./components/display-log";
 import { dbLog } from './api/lib';
 import ClearLog from './components/clear-log';
+
 
 async function callApi (uri: string, token: string) {
 
@@ -66,7 +69,7 @@ export default async function Home() {
   //const supabase = createClient(supabaseUrl!, supabaseKey!)
 
   const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
+  const supabase = createClient();
 
   const { data } = await supabase.from("test").select();
   const user = await supabase.auth.getUser()
@@ -114,7 +117,7 @@ export default async function Home() {
   }
   return (
     <>
-    
+    <h1>Welcome {user.data.user?.email}</h1>
     <form action={refreshClasses}>
       <button type="submit" disabled={!token}>Refresh Classes</button>
     </form>
