@@ -12,14 +12,23 @@ type MenuItem = {
 
 const SideBar = () => {
 
-    const menuItems = [{label:"Home", href: "/"}]
+    const menuItems = [
+        {label:"Home", href: "/"},
+        {label:"Planning", href: `/planning`},
+        {label:"Marking", href: `/homework-check`},
+        {label:"Formative Progress", href:`/formative-check/classes`} 
+    ]
 
     return <div className={styles.sideBar}>
         <SignInButton/>
         {
-            menuItems.map((mi:MenuItem, index: number) => (<div key={index} className={roboto.className}><Link href="">{mi.label}</Link></div>))
+            menuItems.map((mi:MenuItem, index: number) => (
+                <div key={index} className={roboto.className}>
+                    <Link href={mi.href}>{mi.label}</Link>
+                </div>
+                )
+            )
         }
-        
         </div>
 }
 
