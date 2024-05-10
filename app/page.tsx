@@ -27,8 +27,7 @@ export default async function Home() {
     <div className={styles.displayCards} >
       <Suspense fallback={<h1>Loading</h1>}>
         <TeamsAssignmentsRefresh/>
-        <TeamsHomeworkRefresh/>
-        <FormativesHomeworkRefresh/> 
+        
       </Suspense>
     </div>
     </>
