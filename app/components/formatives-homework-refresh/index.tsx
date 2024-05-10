@@ -35,23 +35,8 @@ const TeamsAssignmentsRefresh = async () => {
                             .limit(1).maybeSingle();
 
     return <>
-         <Card sx={{ minWidth: 275 }} className={styles.card}> 
-            <CardContent>
-                
-                <Typography variant="h5" component="div">
-                Formatives
-                </Typography>
-
-                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)}
-                </Typography>        
-
-            </CardContent>
-            <CardActions>
-                {// <RefreshMarking/>
-                }
-            </CardActions>
-        </Card>
+          <h3>Formative</h3>
+          {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)}
     </>
 }
 

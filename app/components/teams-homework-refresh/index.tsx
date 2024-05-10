@@ -36,22 +36,10 @@ const TeamsAssignmentsRefresh = async () => {
                                       .maybeSingle();
 
     return <>
-         <Card sx={{ minWidth: 275 }} className={styles.card}> 
-            <CardContent>
-                
-                <Typography variant="h5" component="div">
-                Homework
-                </Typography>
+        <h3>Homework</h3>
+        {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)}
+        <RefreshMarking/>
 
-                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)}
-                </Typography>        
-
-            </CardContent>
-            <CardActions>
-                <RefreshMarking/>
-            </CardActions>
-        </Card>
     </>
 }
 
