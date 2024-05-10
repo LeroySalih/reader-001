@@ -3,7 +3,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 
 import {useState, useEffect} from "react";
-// import { refreshSignIn } from "./refresh";
+import { refreshSignIn } from "./refresh";
 
 type Profile = {
   firstName: string, 
@@ -32,7 +32,7 @@ export default function SignInButton() {
           },
         });
 
-        //refreshSignIn();
+        refreshSignIn();
       }
 
     async function signOut() {
@@ -47,7 +47,7 @@ export default function SignInButton() {
     const handleSignOut = () => {
         console.log("Signing Out");
         signOut();
-        //refreshSignIn();
+        refreshSignIn();
     }
 
     useEffect( ()=> {
@@ -85,14 +85,14 @@ export default function SignInButton() {
 
         if (session == null) {
           setUser(null);
-          // refreshSignIn();
+          refreshSignIn();
           return;
         }
 
         const {user} = session!;
 
         setUser(user);
-        // refreshSignIn();
+        refreshSignIn();
       });
 
       return () => {data.subscription.unsubscribe()}
