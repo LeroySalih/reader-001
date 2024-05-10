@@ -24,7 +24,9 @@ export default async function Home() {
     <>
     <h1>Welcome {user.data.user?.email}</h1>
     <div className={styles.displayCards} >
-      
+      <TeamsAssignmentsRefresh/>
+      <TeamsHomeworkRefresh/>
+      <FormativesHomeworkRefresh/>
     </div>
     </>
   )
