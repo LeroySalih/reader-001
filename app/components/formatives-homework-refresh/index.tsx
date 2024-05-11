@@ -8,7 +8,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import RefreshAssignments from '../refresh-assignments';
+import RefreshAssignments from '../refresh-planning';
 import RefreshMarking from "../refresh-marking";
 
 import { createClient } from '@/app/utils/supabase/server';
@@ -34,10 +34,10 @@ const TeamsAssignmentsRefresh = async () => {
                             .order("created_at", {ascending: false})
                             .limit(1).maybeSingle();
 
-    return <>
+    return <div className={styles.Card}>
           <h3>Formative</h3>
           {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)}
-    </>
+    </div>
 }
 
 export default TeamsAssignmentsRefresh;

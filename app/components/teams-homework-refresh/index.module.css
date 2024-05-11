@@ -1,3 +1,8 @@
-.card {
+.Card {
     margin-right: 2rem;
+    padding: 1rem;
+    border: silver 1px solid;
+    width: 300px;
+    background-color: white;
+    border-radius: 0.5rem;
 }

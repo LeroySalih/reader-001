@@ -1,10 +1,11 @@
 import styles from './page.module.css'
 import { createClient } from "./utils/supabase/server";
 
-import TeamsAssignmentsRefresh from "@/app/components/teams-assignments-refresh";
+import TeamsPlanningRefresh from "@/app/components/teams-planning-refresh";
 import TeamsHomeworkRefresh from "@/app/components/teams-homework-refresh";
 import FormativesHomeworkRefresh from "@/app/components/formatives-homework-refresh";
 import { Suspense } from 'react';
+import DisplayLog from './components/display-log';
 
 export default async function Home() {
 
@@ -26,9 +27,14 @@ export default async function Home() {
     <h1>Welcome {user.data.user?.email}</h1>
     <div className={styles.displayCards} >
       <Suspense fallback={<h1>Loading</h1>}>
-        <TeamsAssignmentsRefresh/>
-        <TeamsHomeworkRefresh/>
-        <FormativesHomeworkRefresh/> 
+        <div >
+          <TeamsPlanningRefresh/>
+          <TeamsHomeworkRefresh/>
+          <FormativesHomeworkRefresh/> 
+        </div>
+        <div style={{display:"flex", flexDirection: "column"}}>
+          <DisplayLog/>
+        </div>
       </Suspense>
     </div>
     </>

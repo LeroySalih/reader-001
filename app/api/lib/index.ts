@@ -4,11 +4,22 @@ import { cookies } from "next/headers";
 import axios from 'axios';
 
 export async function dbLog(type: string, message: string) {
-    const cookieStore = cookies();
-    const supabase = createClient();
+
+     const supabase = createClient();  
   
-    await supabase.from("log").insert({type, message}); 
-  }
+     await supabase.from("log").insert({type, message}); 
+  
+     console.log(`[${type}] ${message}`);
+
+}
+
+export async function dbTrackerLog(table: string, event: string) {
+  const supabase = createClient();
+  await supabase.from("updateTracker").insert({table, event})
+}
+
+
+
 
 export async function callApi (uri: string, token: string) {
 
@@ -24,8 +35,10 @@ export async function callApi (uri: string, token: string) {
       const response = await axios.get(uri, options);
       return response.data;
     } catch (error:any) {
-        console.error(error)
-        throw new Error(error.message);
+        console.error(error.message)
+        dbLog("ERROR", error.message);
+        dbLog("ERROR", uri)
+        // throw new Error(error.message);
     }
 
 }; 

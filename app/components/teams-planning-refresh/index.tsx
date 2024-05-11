@@ -1,27 +1,16 @@
 "use server"
 
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 
-import RefreshAssignments from '../refresh-assignments';
-import RefreshMarking from "../refresh-marking";
+
+import RefreshPlanning from '../refresh-planning';
+
 
 import { createClient } from '@/app/utils/supabase/server';
 import { DateTime} from "luxon";
 import styles from "./index.module.css"
-const bull = (
-    <Box
-      component="span"
-      sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-    >
-      •
-    </Box>
-  );
+
+import { refeshPlanning } from './refresh-planning';
+
 
 const TeamsAssignmentsRefresh = async () => {
 
@@ -34,12 +23,16 @@ const TeamsAssignmentsRefresh = async () => {
                 .limit(1)
                 .maybeSingle();
 
-    return <>
-        <h3>Assignments</h3>
+    return  <div className={styles.Card}>
+        <h3>Planning</h3>
         {data?.event}: {data?.created_at.substring(0, 10)} {data?.created_at.substring(11, 16)} 
-        <RefreshAssignments/>
+        <RefreshPlanning/>
+
+        <form action={refeshPlanning}>
+          <button type="submit">Refresh</button>
+        </form>
          
-    </>
+    </div>
 }
 
 export default TeamsAssignmentsRefresh;

@@ -1,12 +1,13 @@
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
 
-import { dbLog, callApi, callFullApi } from "../../lib";
+import { dbLog, dbTrackerLog, callApi, callFullApi } from "../../lib";
 
 
 export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
     
+    console.log("In API call")
 
     const messages:any[] = [];
 
@@ -14,12 +15,11 @@ export async function GET(request: Request) {
 
 
     console.log('API refresh called');
-    dbLog(   "info", "Refresh API called")
+    // dbLog(   "info", "Refresh API called")
+    dbTrackerLog("assignments", "Update started");
 
     const session = await supabase.auth.getSession();
   
-    await supabase.from("updateTracker").insert({table: "assignments", event: "Update started"});
-
     const token = session?.data?.session?.provider_token;
 
     if (!token){
@@ -27,12 +27,15 @@ export async function GET(request: Request) {
       return Response.json({status: false, message: "No token found"} )
     } ;
 
-    const {data, error} = await supabase.from("msTeamsClasses")
-                        .select("id, displayName")
-                        .in("displayName", ['23-11CS', '23-10CS', 
-                        '23-13BS', '23-12BS', '23-11BS1', '23-11BS2', '23-11BS1', '23-10BS1', '23-10BS2',
-                        '23-11EC1', '23-11EC', '23-10EC', '23-10EC1', '23-10EC2',
-                        '23-11IT', '23-10IT', '23-10DT']);
+    await supabase.from("updateTracker").insert({table: "assignments", event: "Update started"});
+
+
+      const {data, error} = await supabase.from("msTeamsClasses")
+                          .select("id, displayName")
+                          .in("displayName", ['23-11CS', '23-10CS', 
+                          '23-13BS', '23-12BS', '23-11BS1', '23-11BS2', '23-11BS1', '23-10BS1', '23-10BS2',
+                          '23-11EC1', '23-11EC', '23-10EC', '23-10EC1', '23-10EC2',
+                          '23-11IT', '23-10IT', '23-10DT']);
 
 
     const myUpsertData: any = [];
@@ -84,8 +87,9 @@ export async function GET(request: Request) {
             })
             )
 
-    await supabase.from("updateTracker").insert({table: "assignments", event: "Update completed"});
+    // await supabase.from("updateTracker").insert({table: "assignments", event: "Update completed"});
     
     dbLog("info", `Refresh completed for all classes`)
+    dbTrackerLog("assignments", "Update ended");
     return Response.json( {status: true, message: "OK", token, messages})
 }
