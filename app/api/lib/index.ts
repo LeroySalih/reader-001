@@ -46,6 +46,7 @@ export async function callApi (uri: string, token: string) {
 export async function callFullApi(uri : string, token : string) {
 
   // console.log("Calling MS Graph API", uri, token);
+  dbLog("info", `Calling ${uri}`);
 
   let values:any = [];
 
